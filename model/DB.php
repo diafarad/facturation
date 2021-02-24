@@ -17,6 +17,10 @@
         return mysqli_query(getConnection(), $sql);
     }
 
+    function getLastInsertId(){
+        return mysqli_insert_id(getConnection());
+    }
+
     function closeConnexion($connexion)
     {
         mysqli_close($connexion);

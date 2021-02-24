@@ -8,13 +8,13 @@
 
     function deleteClient($code)
     {
-        $sql = "DELETE FROM client WHERE code = $code";
+        $sql = "DELETE FROM client WHERE code = '$code'";
         return executeSQL($sql);
     }
 
     function updateClient($code,$nom,$adresse,$tel)
     {
-        $sql = "UPDATE client SET nom = '$nom',
+        $sql = "UPDATE client SET nomComplet = '$nom',
                                     adresse = '$adresse',
                                     tel = '$tel'
                                     WHERE code = '$code'";

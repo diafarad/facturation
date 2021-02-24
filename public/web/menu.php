@@ -10,7 +10,9 @@
 <body>
 <div class="nav navbar navbar-inverse navbar-fixed-top">
     <ul class="nav navbar-nav">
-        <li><a href="../../index.php" style="font-weight: bold; color: #fff">GESTION FACTURATION</a></li>
+        <li><a href="../../index.php" style="font-weight: bold; color: #fff">ACCUEIL   |</a></li>
+        <li><a href="../../view/client/liste.php" style="font-weight: bold; color: #fff">Client</a></li>
+        <li><a href="../../view/fournisseur/liste.php" style="font-weight: bold; color: #fff">Fournisseur</a></li>
     </ul>
 </div>
 </body>

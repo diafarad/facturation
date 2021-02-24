@@ -1,7 +1,7 @@
 <?php
 include_once '../../public/web/menu.php';
 include_once '../../model/DB.php';
-include_once '../../model/FactureDB.php';
+include_once '../../model/BordereauDB.php';
 ?>
 <!doctype html>
 <html lang="en">
@@ -46,7 +46,7 @@ include_once '../../model/FactureDB.php';
 
 <div class="container" style="margin-top: 90px">
     <div class="panel panel-info ">
-        <div class="panel-heading" align="center"><h2>Mes factures</h2></div>
+        <div class="panel-heading" align="center"><h2>Mes bordereaux</h2></div>
         <div class="panel-body">
             <button type="button" style="margin-bottom: 5px;" class="btn btn-primary" data-toggle="modal"
                     data-target="#exampleModal" data-whatever="@mdo">Ajouter
@@ -54,27 +54,26 @@ include_once '../../model/FactureDB.php';
             <table id="example" class="ui celled table" style="width:100%; margin-left: auto; ">
                 <thead>
                 <tr>
-                    <th style='text-align:center;'>Numéro facture</th>
+                    <th style='text-align:center;'>Numéro</th>
                     <th style='text-align:center;'>Date</th>
-                    <th style='text-align:center;'>Montant</th>
-                    <th style='text-align:center;'>Code client</th>
+                    <th style='text-align:center;'>Facture</th>
+                    <th style="text-align: center">Code Client </th>
                     <th style="text-align: center">Action </th>
                     <th style="text-align: center">Action </th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
-                $factures = listeFacture();
-                while($result=mysqli_fetch_row($factures))
+                $bordereau = listeBordereau();
+                while($result=mysqli_fetch_row($bordereau))
                 {
-                    $montant = number_format($result[2],0,',', ' ');
                     echo "
                     <tr>
                         <td style='text-align:center;'>$result[0]</td>
                         <td style='text-align:center;'>$result[1]</td>
-                        <td style='text-align:center;'>$montant</td>
+                        <td style='text-align:center;'>$result[2]</td>
                         <td style='text-align:center;'>$result[3]</td>
-                        <td><center><a target='_blank' class='btn btn-info btn-xs' href='../../view/facturation/detail.php?num=$result[0]'>Détails</a></center></td>
+                        <td><center><a target='_blank' class='btn btn-info btn-xs' href='../../view/bordereau/detail.php?num=$result[0]'>Détails</a></center></td>
                         <td>
                         <center><button type='button' class='btn btn-warning btn-xs del_button' 
                         data-toggle='modal' data-target='#mydelModal'
@@ -100,10 +99,10 @@ include_once '../../model/FactureDB.php';
                 </tbody>
                 <tfoot>
                 <tr>
-                <th style='text-align:center;'>Numéro facture</th>
+                    <th style='text-align:center;'>Numéro</th>
                     <th style='text-align:center;'>Date</th>
-                    <th style='text-align:center;'>Montant</th>
-                    <th style='text-align:center;'>Code client</th>
+                    <th style='text-align:center;'>Facture</th>
+                    <th style="text-align: center">Code Client </th>
                     <th style="text-align: center">Action </th>
                     <th style="text-align: center">Action </th>
                 </tr>
@@ -117,29 +116,33 @@ include_once '../../model/FactureDB.php';
     <div class="modal-dialog" role="document" style="width:1005px;">
         <div class="modal-content" >
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel" align="center">Facturation</h4>
+                <h4 class="modal-title" id="exampleModalLabel" align="center">Bon de commande</h4>
                 <button type="button" id="closemodal" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-               <div class="row">
+            <div class="row">
                     <div class="col-xs-4" title="Ajout commande">
-                    <div class="panel-heading" align="center"><h5><b>Client</b></h5></div>
+                    <div class="panel-heading" align="center"><h5><b>Infos facture</b></h5></div>
                         <div class="form-group">
-                            <label class="control-label">Code Client</label>
-                            <select class='selectpicker show-menu-arrow form-control' type="text" name="code" id="code">
-                                <option value="" > <?php echo "Sélectionner le client";?> </option>
+                            <label class="control-label">Numéro Facture</label>
+                            <select class='selectpicker show-menu-arrow form-control' type="text" name="fac" id="fac">
+                                <option value="" > <?php echo "Sélectionner la facture";?> </option>
                                 <?php
                                 include_once "../../model/DB.php";
-                                include_once "../../model/ClientDB.php";
-                                $list = listeClient();
+                                include_once "../../model/FactureDB.php";
+                                $list = listeFacture();
                                 while($row = mysqli_fetch_row($list)){
                                     ?>
-                                    <option value="<?php echo $row[0];?>"> <?php echo $row[0]." - ".$row[1];?> </option>
+                                    <option value="<?php echo $row[0];?>"> <?php echo $row[0];?> </option>
                                 <?php } ?>
                             </select>
-                            <span id="err_code" class="text-danger"></span>
+                            <span id="err_fac" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Code Client</label>
+                            <input class="form-control" readonly type="text" name="code" id="code" placeholder="Code du client"/>
                         </div>
                     <div class="panel-heading" align="center"><h5><b>Article</b></h5></div>
                         <div class="form-group">
@@ -153,25 +156,18 @@ include_once '../../model/FactureDB.php';
                             <span id="err_qte" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label class="control-label">Prix unitaire</label>
-                            <input class="form-control" type="text" name="pu" id="pu" placeholder="Entrer la quantité"/>
-                            <span id="err_pu" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
                             <input class="btn btn-success" type="hidden" name="row_id" value="hidden_row_id"/>
                             <button class="btn btn-success" type="button" name="add" id="add">Ajouter</button>
                         </div>
                     </div>
-                    <form method="post" target="_blank" id="list_articles" action="./facture.php">
+                    <form method="post" target="_blank" id="list_articles" action="./bordereau.php">
                         <div class="col-xs-8" title="Liste commande">
-                        <div class="panel-heading" align="center"><h5><b>Les articles</b></h5><input type="checkbox" name="tva" value="1"> TVA</div>
+                        <div class="panel-heading" align="center"><h5><b>Les articles</b></h5></div>
                             <table class="table table-bordered table-striped" id="lesarticles">
                                 <thead>
                                 <tr>
                                     <th>Désignation</th>
                                     <th>Quantité</th>
-                                    <th>PU HTVA</th>
-                                    <th>Prix Total HTVA</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -180,14 +176,14 @@ include_once '../../model/FactureDB.php';
                             </table>
                             <div id="action_alert"></div>
                             <div class="form-group">
-                                <input class="btn btn-success" type="submit" id="com" name="commander" value="Valider" style="float:right;"/>
+                                <input class="btn btn-success" type="submit" name="commander" value="Valider" style="float:right;"/>
                             </div>
                         </div>
                     </form>
                 </div>
-                </div>
+            </div>
+            </div>
         </div>
-    </div>
 </div>
 
 <div class="modal fade" id="mydelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -195,9 +191,9 @@ include_once '../../model/FactureDB.php';
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Suppression facture</h4>
+                <h4 class="modal-title" id="myModalLabel">Suppression bon de commande</h4>
             </div>
-            <form method="post" action="../../controller/FactureController.php">
+            <form method="post" action="../../controller/BordereauController.php">
                 <div class="modal-body">
                     <div class="form-group">
                         <h3>Voulez-vous vraiment supprimer?</h3>
@@ -218,28 +214,44 @@ include_once '../../model/FactureDB.php';
 <script>
     $(document).ready(function(){
         var count = 0;
+        var code = '';
+
+        $('#fac').change(function(){
+            var d = 'num='+$('#fac').val();
+            $.ajax({
+                type: "POST",
+                url: "./fac.php",
+                dataType: "json",
+                data: d,
+                cache: false,
+                success: function(data) {
+                    code = data[3];
+                    $('#code').val(code);
+                },
+                error : function (e) {
+                    alert(e);
+                }
+            });
+        });
 
         $('#add').click(function () {
-            var err_code = '';
+            var err_fac = '';
             var err_des = '';
             var err_qte = '';
-            var err_pu = '';
-            var code = '';
+            var fac = '';
             var des = '';
             var qte = '';
-            var pu = '';
-            var puTotal = '';
 
-            if($('#code').val() == ''){
-                err_code = 'Entrer le code du client';
-                $('#err_code').text(err_code);
-                $('#code').css('border-color', '#cc0000');
-                code = '';
+            if($('#fac').val() == ''){
+                err_nom = 'Sélectionner une facture';
+                $('#err_fac').text(err_fac);
+                $('#fac').css('border-color', '#cc0000');
+                fac = '';
             }else {
-                err_code = '';
-                $('#err_code').text(err_code);
-                $('#code').css('border-color', '');
-                code = $('#code').val();
+                err_fac = '';
+                $('#err_fac').text(err_fac);
+                $('#fac').css('border-color', '');
+                fac = $('#fac').val();
             }
             if($('#des').val() == ''){
                 err_des = 'Entrer la désignation';
@@ -263,46 +275,30 @@ include_once '../../model/FactureDB.php';
                 $('#qte').css('border-color', '');
                 qte = $('#qte').val();
             }
-            if($('#pu').val() == ''){
-                err_pu = 'Entrer le prix unitaire';
-                $('#err_pu').text(err_pu);
-                $('#pu').css('border-color', '#cc0000');
-                pu = '';
-            }else {
-                err_pu = '';
-                $('#err_pu').text(err_pu);
-                $('#pu').css('border-color', '');
-                pu = $('#pu').val();
-            }
-            if(err_code != '' || err_des != '' || err_pu != '' || err_qte != ''){
+            if(err_fac != '' || err_des != '' || err_qte != ''){
                 return false;
             }else {
                 if($('#add').text() == 'Ajouter'){
-                    puTotal = pu*qte;
                     count = count + 1;
                     output = '<tr id="row_'+count+'">';
-                    output += '<input type="hidden" name="codeClient" id="codeClient" value="'+code+'"/></td>';
-                    output += '<input type="hidden" name="hidden_code[]" id="code'+count+'" value="'+code+'"/></td>';
+                    output += '<input type="hidden" name="fac" id="fac" value="'+fac+'"/></td>';
+                    output += '<input type="hidden" name="code" id="code" value="'+code+'"/></td>';
+                    output += '<input type="hidden" name="hidden_fac[]" id="fac'+count+'" value="'+fac+'"/></td>';
                     output += '<td>'+des+' <input type="hidden" name="hidden_des[]" id="des'+count+'" class="des" value="'+des+'"/></td>';
                     output += '<td>'+qte+' <input type="hidden" name="hidden_qte[]" id="qte'+count+'" value="'+qte+'"/></td>';
-                    output += '<td>'+pu+' <input type="hidden" name="hidden_pu[]" id="pu'+count+'" value="'+pu+'"/></td>';
-                    output += '<td>'+puTotal+' <input type="hidden" name="hidden_puTotal[]" id="puTotal'+count+'" value="'+puTotal+'"/></td>';
                     output += '<td><center><button type="button" name="remove_details" class="btn btn-danger btn-xs remove_details" id="'+count+'">Supprimer</button></center></td>';
                     output += '</tr>';
-                    designation = '';
-                    libelle = '';
                     $('#lesarticles').append(output);
                     $('#action_alert').html('');
                     $('#des').val('');
                     $('#qte').val('');
-                    $('#pu').val('');
                 }
             }
         });
 
         $(document).on('click', '.remove_details', function () {
             var row_id = $(this).attr("id");
-            if(confirm("Voulez-vous supprimer cet article de la facture?")){
+            if(confirm("Voulez-vous supprimer cet article de la commande?")){
                 $('#row_'+row_id+'').remove();
             }else {
                 return false;
@@ -313,6 +309,8 @@ include_once '../../model/FactureDB.php';
         var id = $(this).data('id');
 
         $(".del_id").val(id);
-        });      
+        });
+
+        
     });
 </script>

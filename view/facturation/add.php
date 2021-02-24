@@ -1,20 +1,22 @@
 <?php
 include_once '../../public/web/menu.php';
-include_once '../../model/DB.php';
-include_once '../../model/FactureDB.php';
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Article</title>
+    <title>Commande</title>
     <link type="text/css" rel="stylesheet" href="../../public/css/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="../../public/Semantic-UI-CSS-master/semantic.min.css"/>
     <link type="text/css" rel="stylesheet" href="../../public/DataTables/DataTables-1.10.20/css/dataTables.semanticui.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../../public/css/jquery-ui.css"/>
+
     <script src="../../public/js/jquery-3.3.1.js"></script>
     <script src="../../public/DataTables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="../../public/DataTables/DataTables-1.10.20/js/dataTables.semanticui.min.js"></script>
     <script src="../../public/Semantic-UI-CSS-master/semantic.min.js"></script>
+    <script src="../../public/js/jquery-ui.js"></script>
+
     <script>
         $(document).ready(function() {
             $('#example').DataTable( {
@@ -44,81 +46,12 @@ include_once '../../model/FactureDB.php';
 </head>
 <body>
 
-<div class="container" style="margin-top: 90px">
-    <div class="panel panel-info ">
-        <div class="panel-heading" align="center"><h2>Mes factures</h2></div>
-        <div class="panel-body">
-            <button type="button" style="margin-bottom: 5px;" class="btn btn-primary" data-toggle="modal"
-                    data-target="#exampleModal" data-whatever="@mdo">Ajouter
-            </button>
-            <table id="example" class="ui celled table" style="width:100%; margin-left: auto; ">
-                <thead>
-                <tr>
-                    <th style='text-align:center;'>Numéro facture</th>
-                    <th style='text-align:center;'>Date</th>
-                    <th style='text-align:center;'>Montant</th>
-                    <th style='text-align:center;'>Code client</th>
-                    <th style="text-align: center">Action </th>
-                    <th style="text-align: center">Action </th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php
-                $factures = listeFacture();
-                while($result=mysqli_fetch_row($factures))
-                {
-                    $montant = number_format($result[2],0,',', ' ');
-                    echo "
-                    <tr>
-                        <td style='text-align:center;'>$result[0]</td>
-                        <td style='text-align:center;'>$result[1]</td>
-                        <td style='text-align:center;'>$montant</td>
-                        <td style='text-align:center;'>$result[3]</td>
-                        <td><center><a target='_blank' class='btn btn-info btn-xs' href='../../view/facturation/detail.php?num=$result[0]'>Détails</a></center></td>
-                        <td>
-                        <center><button type='button' class='btn btn-warning btn-xs del_button' 
-                        data-toggle='modal' data-target='#mydelModal'
-                        data-id='$result[0]'>
-                        Supprimer
-                    </button>
-                    </center></td>
-                    </tr>
-                    ";
-                }
-                if(isset($_GET['resultA']))
-                {
-                    if($_GET['resultA'] == 1)
-                    {
-                        echo "<div class='alert alert-success'> Données ajoutées</div>";
-                    }
-                    else
-                    {
-                        echo "<div class='alert alert-warning'> Erreur de code</div>";
-                    }
-                }
-                ?>
-                </tbody>
-                <tfoot>
-                <tr>
-                <th style='text-align:center;'>Numéro facture</th>
-                    <th style='text-align:center;'>Date</th>
-                    <th style='text-align:center;'>Montant</th>
-                    <th style='text-align:center;'>Code client</th>
-                    <th style="text-align: center">Action </th>
-                    <th style="text-align: center">Action </th>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document" style="width:1005px;">
         <div class="modal-content" >
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel" align="center">Facturation</h4>
-                <button type="button" id="closemodal" class="close" data-dismiss="modal" aria-label="Close">
+                <h4 class="modal-title" id="exampleModalLabel" align="center">Nouveau commande</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -128,17 +61,7 @@ include_once '../../model/FactureDB.php';
                     <div class="panel-heading" align="center"><h5><b>Client</b></h5></div>
                         <div class="form-group">
                             <label class="control-label">Code Client</label>
-                            <select class='selectpicker show-menu-arrow form-control' type="text" name="code" id="code">
-                                <option value="" > <?php echo "Sélectionner le client";?> </option>
-                                <?php
-                                include_once "../../model/DB.php";
-                                include_once "../../model/ClientDB.php";
-                                $list = listeClient();
-                                while($row = mysqli_fetch_row($list)){
-                                    ?>
-                                    <option value="<?php echo $row[0];?>"> <?php echo $row[0]." - ".$row[1];?> </option>
-                                <?php } ?>
-                            </select>
+                            <input class="form-control" type="text" name="code" id="code" placeholder="Entrer le code client"/>
                             <span id="err_code" class="text-danger"></span>
                         </div>
                     <div class="panel-heading" align="center"><h5><b>Article</b></h5></div>
@@ -162,9 +85,9 @@ include_once '../../model/FactureDB.php';
                             <button class="btn btn-success" type="button" name="add" id="add">Ajouter</button>
                         </div>
                     </div>
-                    <form method="post" target="_blank" id="list_articles" action="./facture.php">
+                    <form method="post" id="list_articles" action="./facture.php">
                         <div class="col-xs-8" title="Liste commande">
-                        <div class="panel-heading" align="center"><h5><b>Les articles</b></h5><input type="checkbox" name="tva" value="1"> TVA</div>
+                        <div class="panel-heading" align="center"><h5><b>Les articles</b></h5></div>
                             <table class="table table-bordered table-striped" id="lesarticles">
                                 <thead>
                                 <tr>
@@ -180,7 +103,7 @@ include_once '../../model/FactureDB.php';
                             </table>
                             <div id="action_alert"></div>
                             <div class="form-group">
-                                <input class="btn btn-success" type="submit" id="com" name="commander" value="Valider" style="float:right;"/>
+                                <input class="btn btn-success" type="submit" name="commander" value="Valider" style="float:right;"/>
                             </div>
                         </div>
                     </form>
@@ -189,29 +112,6 @@ include_once '../../model/FactureDB.php';
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="mydelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Suppression facture</h4>
-            </div>
-            <form method="post" action="../../controller/FactureController.php">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <h3>Voulez-vous vraiment supprimer?</h3>
-                        <input class="form-control del_id" type="hidden" name="id" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-warning" name="supprimer">Confirmer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 </body>
 </html>
 
@@ -302,17 +202,13 @@ include_once '../../model/FactureDB.php';
 
         $(document).on('click', '.remove_details', function () {
             var row_id = $(this).attr("id");
-            if(confirm("Voulez-vous supprimer cet article de la facture?")){
+            if(confirm("Voulez-vous supprimer cet article de la commande?")){
                 $('#row_'+row_id+'').remove();
             }else {
                 return false;
             }
         });
 
-        $(document).on( "click", '.del_button',function(e) {
-        var id = $(this).data('id');
-
-        $(".del_id").val(id);
-        });      
+        
     });
 </script>

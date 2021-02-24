@@ -5,20 +5,28 @@ require_once '../model/FournisseurDB.php';
 
     if(isset($_POST['valider']))
     {
-        $ok = addFournisseur($_POST['nom'],$_POST['adresse'],$_POST['ville'],$_POST['pays'],$_POST['tel'],$_POST['mail'],$_POST['bp']);
-        header("location:..?page=fournisseur/liste&resultA=$ok");
+        $ok = addFournisseur($_POST['nom'],$_POST['adresse'],$_POST['tel']);
+        header("location:../../view/fournisseur/liste.php?resultA=$ok");
     }
 
-    if(isset($_POST['envoyer']))
+    if(isset($_POST['edit_id']) && isset($_POST['edit_nom']) && isset($_POST['edit_adr']) && isset($_POST['edit_tel']))
     {
-        $ok = updateFournisseur($_POST['idF'],$_POST['nomF'],$_POST['adresseF'],$_POST['villeF'],$_POST['paysF'],$_POST['telF'],$_POST['mailF'],$_POST['bpF']);
-        header("location:..?page=user/liste&resultE=$ok");
+        $ok = updateFournisseur($_POST['edit_id'],$_POST['edit_nom'],$_POST['edit_adr'],$_POST['edit_tel']);
+        if ($ok == 1)
+            echo "<div class='alert alert-success'><center>Donnée(s) modifiée(s) avec succès.</center></div>";
+        else
+            echo "<div class='alert alert-danger'><center>Une petite erreur est survenue.</br>Réessayer plutard.</center></div>";
     }
 
-    if(isset($_GET['idF']))
+    if(isset($_POST['supprimer']))
     {
-        $ok = deleteFournisseur($_GET['idF']);
-        header("location:../view/user/liste.php?resultD=$ok");
+        $ok = deleteFournisseur($_POST['id']);
+        if($ok == 1){
+            header("location:../view/fournisseur/liste.php?resultD=$ok");
+        }
+        else{
+            echo 'Une petite erreur est survenue';
+        }
     }
 
 ?>

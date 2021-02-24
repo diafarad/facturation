@@ -9,11 +9,8 @@ protected $I;
 protected $U;
 protected $HREF;
 private $num;
-private $codeClient;
-private $totalTTC;
-private $totalHT;
-private $TVA;
-private $existTVA;
+private $facture;
+private $code;
 private $lettre;
 private $date;
 
@@ -24,6 +21,13 @@ public function getNum(){
 	return $this->num;
 }
 
+public function setFacture($facture){
+	$this->facture = $facture;
+}
+public function getFacture(){
+	return $this->facture;
+}
+
 public function setDate($date){
 	$this->date = $date;
 }
@@ -31,18 +35,11 @@ public function getDate(){
 	return $this->date;
 }
 
-public function setCodeClient($codeClient){
-	$this->codeClient = $codeClient;
+public function setCode($code){
+	$this->code = $code;
 }
-public function getCodeClient(){
-	return $this->codeClient;
-}
-
-public function setTotalTTC($totalTTC){
-	$this->totalTTC = $totalTTC;
-}
-public function getTotalTTC(){
-	return $this->totalTTC;
+public function getCode(){
+	return $this->code;
 }
 
 public function setLettre($lettre){
@@ -51,28 +48,6 @@ public function setLettre($lettre){
 public function getLettre(){
 	return $this->lettre;
 }
-
-public function setTotalHT($totalHT){
-	$this->totalHT = $totalHT;
-}
-public function getTotalHT(){
-	return $this->totalHT;
-}
-
-public function setTVA($TVA){
-	$this->TVA = $TVA;
-}
-public function getTVA(){
-	return $this->TVA;
-}
-
-public function setExistTVA($existTVA){
-	$this->existTVA = $existTVA;
-}
-public function getExistTVA(){
-	return $this->existTVA;
-}
-
 
 function __construct($orientation='P', $unit='mm', $format='A4')
 {
@@ -98,90 +73,78 @@ function __construct($orientation='P', $unit='mm', $format='A4')
 		$this->Ln(-1);
 		$this->SetX(95);
 		$this->Cell(20,25,'____________________________________________________________________',0,0,'C');
-		$this->Ln(5);
-		$this->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
-		$this->RoundedRect(19, 63, 85, 30, 3.50, '1111', 'D');
-		// Police Arial gras 15
-		$this->SetFont('Times','B',10);
-		// Décalage à droite
-		$this->Cell(151);
+		
+		$this->SetY(50);
+		$this->SetFont('Times','',12);
+		$this->SetX(170);
+		$this->Cell(20,25,'Dakar, le '.$this->date,0,0,'R');
 
-
-		// Saut de ligne
-		$this->SetFont('Times','B',14);
-		$this->Ln(12);
+		$this->SetY(60);
+		$this->SetFont('Times','B',18);
 		$this->SetX(24);
-		$this->Cell(20,25,utf8_decode('FACTURE'),0,0,'C');
-		$this->Ln(3);
-		$this->SetFont('Times','B',11);
-		$this->SetX(54);
-		$this->Cell(15,25,'____________________________________________',0,0,'C');
-		$style2 = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-		$this->SetX(60);
-		$this->Line(50, 63, 50, 73, $style2);
-		$this->SetFont('Times','B',10);
-		$this->Ln(-6);
-		$this->SetX(70);
-		$this->Cell(15,25,utf8_decode('N°'),0,0,'C');
+		$this->Cell(20,25,utf8_decode('BORDEREAU  DE LIVRAISON'),0,0,'L');
+		$this->Rect(22,67,95,15);
 		$this->Ln(5);
-		$this->SetX(70);
-		$this->SetFont('Times','',12);
-		$this->Cell(15,25,utf8_decode($this->num),0,0,'C');
-		$this->Ln(9);
-		$this->SetX(55);
-		$this->SetFont('Times','',12);
-		$this->Cell(15,25,utf8_decode('Dakar, le '.$this->date),0,0,'C');
-		$this->Ln(3);
-		$this->SetFont('Times','B',11);
-		$this->SetX(54);
-		$this->Cell(15,25,'____________________________________________',0,0,'C');
-		$this->Ln(6);
-		$this->SetX(54);
-		$this->SetFont('Times','',12);
-		$this->Cell(15,25,utf8_decode('Code Client : '.$this->codeClient),0,0,'C');
+		$this->SetFont('Times','B',10);
+		$this->SetX(24);
+		$this->Cell(20,25,utf8_decode($this->num),0,0,'L');
+		
+		$this->SetY(90);
+		$this->SetFont('Times','B',12);
+		$this->SetX(24);
+		$this->Cell(20,25,utf8_decode('Ref. FACTURE '.$this->getFacture()),0,0,'L');
+		$this->SetX(170);
+		$this->Cell(20,25,utf8_decode('Code Client : '.$this->getCode()),0,0,'R');
 
-		$this->Ln(30);
+		$this->Ln(20);
 	}
 
 	// Pied de page
 	function Footer()
 	{
-	// Positionnement à 1,5 cm du bas
-	$this->SetY(-65);
-	// Police Arial italique 8
-	$this->SetX(20);
-	$this->SetFont('Times','B',10);
-	$this->Cell(15,25,utf8_decode("Veuillez payer à l'ordre de"),0,0,'L');
-	$this->Ln(5);
-	$this->SetX(20);
-	$this->Cell(15,25,utf8_decode("CHABS TRADING COMPANY"),0,0,'L');
-	$this->SetY(-65);
-	$this->SetX(167);
-	$this->SetFont('Times','B',12);
-	$this->Cell(15,25,utf8_decode("La Direction"),0,0,'L');
-	$this->Ln(40);
-	// Numéro de page
-	$this->SetY(-25);
-	$this->SetFont('Times','B',12);
-	$this->Cell(0,10,'_________________________________________________________________________________',0,0,'C');
-	$this->Ln(-2);
-	$this->SetX(95);
-	$this->SetFont('Times','',8);
-	$this->Cell(15,25,'CHABS TRADING COMPANY',0,0,'C');
-	$this->Ln(3);
-	$this->SetX(95);
-	$this->Cell(15,25,'Ouest Foire lot 13 Dakar',0,0,'C');
-	$this->Ln(3);
-	$this->SetX(95);
-	$this->Cell(15,25,'Email : chabs.companytrading@gmail.com',0,0,'C');
-	$this->Ln(3);
-	$this->SetX(95);
-	$this->Cell(15,25,'Tel : +221 77 630 22 11 / +221 33 820 37 04',0,0,'C');
-	$this->Ln(3);
-	$this->SetX(95);
-	$this->Cell(15,25,utf8_decode('CBAO N° compte : SN012 01229 036198353701 52 - NINEA 005801966 2Y1'),0,0,'C');
+		$this->SetY(-65);
+		$this->SetX(167);
+		$this->SetFont('Times','B',12);
+		$this->Cell(15,25,utf8_decode("La Direction"),0,0,'L');
+		$this->Rect(25,220,100,50);
+		$this->SetY(-85);
+		$this->SetX(65);
+		$this->SetFont('Times','B',12);
+		$this->Cell(15,25,utf8_decode("Réceptionné et conforme à la facture"),0,0,'C');
+		$this->SetY(-75);
+		$this->SetX(30);
+		$this->SetFont('Times','',12);
+		$this->Cell(15,25,utf8_decode("M : ......................................................."),0,0,'L');
+		$this->Ln(10);
+		$this->SetX(30);
+		$this->Cell(15,25,utf8_decode("Date : ..................................................."),0,0,'L');
+		$this->Ln(10);
+		$this->SetX(30);
+		$this->Cell(15,25,utf8_decode("Signature et cachet : "),0,0,'L');
 
-}
+		$this->Ln(40);
+		// Numéro de page
+		$this->SetY(-25);
+		$this->SetFont('Times','B',12);
+		$this->Cell(0,10,'_________________________________________________________________________________',0,0,'C');
+		$this->Ln(-2);
+		$this->SetX(95);
+		$this->SetFont('Times','',8);
+		$this->Cell(15,25,'CHABS TRADING COMPANY',0,0,'C');
+		$this->Ln(3);
+		$this->SetX(95);
+		$this->Cell(15,25,'Ouest Foire lot 13 Dakar',0,0,'C');
+		$this->Ln(3);
+		$this->SetX(95);
+		$this->Cell(15,25,'Email : chabs.companytrading@gmail.com',0,0,'C');
+		$this->Ln(3);
+		$this->SetX(95);
+		$this->Cell(15,25,'Tel : +221 77 630 22 11 / +221 33 820 37 04',0,0,'C');
+		$this->Ln(3);
+		$this->SetX(95);
+		$this->Cell(15,25,utf8_decode('CBAO N° compte : SN012 01229 036198353701 52 - NINEA 005801966 2Y1'),0,0,'C');
+
+	}
 
 	function RoundedRect($x, $y, $w, $h, $r, $round_corner = '1111', $style = '', $border_style = null, $fill_color = null) {
 		if ('0000' == $round_corner) // Not rounded
@@ -408,31 +371,11 @@ function WriteTable($data, $w)
 	$this->SetX(15);
 	$ok = 0;
 	$max = count($data);
-	if($this->existTVA == 1){
 	foreach($data as $row)
 	{
-		if($ok == ($max-1)){
+		if($ok == 0){
 			$this->SetFont('','B');
-				$this->SetX(105);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<2;$i++)
-				{	
-					$x=$this->GetX();
-					$y=$this->GetY();
-					$this->Rect($x,$y,45,7,'D', null, array(204, 204, 204));
-					$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-					//Put the position to the right of the cell
-					$this->SetXY($x+45,$y);					
-				}
-				$this->Ln($h+2);
-		}
-		elseif($ok == ($max-2)){
-			$this->SetFont('','B');
-			$this->SetX(105);
+			$this->SetX(25);
 			$nb=0;
 			for($i=0;$i<count($row);$i++)
 				$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
@@ -440,232 +383,60 @@ function WriteTable($data, $w)
 			$this->CheckPageBreak($h);
 			for($i=0;$i<2;$i++)
 			{	
-				$x=$this->GetX();
-				$y=$this->GetY();
-				$this->Rect($x,$y,45,7,'D', null, array(204, 204, 204));
-				$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-				//Put the position to the right of the cell
-				$this->SetXY($x+45,$y);					
-			}
-			$this->Ln($h+2);
-		}
-		elseif($ok == ($max-3)){
-				$this->SetFont('','B');
-				$this->SetY($this->GetY()+2);
-				$this->SetX(105);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<2;$i++)
-				{	
+				if($i == 0){
 					$x=$this->GetX();
 					$y=$this->GetY();
-					$this->Rect($x,$y,45,7,'D', null, array(204, 204, 204));
-					$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
+					$l = $w[$i];
+					$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
+					$this->MultiCell($l,5,trim($row[$i]),0,'C');
 					//Put the position to the right of the cell
-					$this->SetXY($x+45,$y);					
+					$this->SetXY($x+$l,$y);	
 				}
-				$this->Ln($h+2);
-		}
-		else{
-			if($ok == 0){
-				$this->SetFont('','B');
-				$this->SetX(15);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<count($row);$i++)
-				{	
-					if($i == 0){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]+25;
-						$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					elseif($i == 1){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]-25;
-						$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					else{
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$this->Rect($x,$y,$w[$i],$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$w[$i],$y);	
-					}					
-				}
-				$this->Ln($h);
-			}
-			else{
-				$this->SetFont('','');
-				$this->SetX(15);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<count($row);$i++)
-				{	
-					if($i == 0){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]+25;
-						$this->Rect($x,$y,$l,$h);
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					elseif($i == 1){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]-25;
-						$this->Rect($x,$y,$l,$h);
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					else{
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$this->Rect($x,$y,$w[$i],$h);
-						$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$w[$i],$y);	
-					}					
-				}
-				$this->Ln($h);
-			}
-		}
-		$ok++;	
-	}
-	$lettre = $this->Conversion($this->totalTTC);
-    $lettre = ucfirst($lettre).'francs';
-    $text = "Arrêter la présente facture à la somme de : $lettre";
-	$this->SetX(15);
-	$this->MultiCell(180,7,utf8_decode($text),0,'L');
-	}
-	else{
-		foreach($data as $row){
-		if($ok == ($max-1)){
-			$this->SetFont('','B');
-			$this->SetY($this->GetY()+2); 
-				$this->SetX(105);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<2;$i++)
-				{	
+				elseif($i == 1){
 					$x=$this->GetX();
 					$y=$this->GetY();
-					$this->Rect($x,$y,45,7,'D', null, array(204, 204, 204));
-					$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
+					$l = 40;
+					$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
+					$this->MultiCell($l,5,trim($row[$i]),0,'C');
 					//Put the position to the right of the cell
-					$this->SetXY($x+45,$y);					
-				}
-				$this->Ln($h+2);
+					$this->SetXY($x+$l,$y);	
+				}				
+			}
+			$this->Ln($h);
 		}
 		else{
-			if($ok == 0){
-				$this->SetFont('','B');
-				$this->SetX(15);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<count($row);$i++)
-				{	
-					if($i == 0){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]+25;
-						$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					elseif($i == 1){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]-25;
-						$this->Rect($x,$y,$l,$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					else{
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$this->Rect($x,$y,$w[$i],$h,'DF', null, array(204, 204, 204));
-						$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$w[$i],$y);	
-					}					
+			$this->SetFont('','');
+			$this->SetX(25);
+			$nb=0;
+			for($i=0;$i<count($row);$i++)
+				$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
+			$h=5*$nb;
+			$this->CheckPageBreak($h);
+			for($i=0;$i<count($row);$i++)
+			{
+				if($i == 0){
+					$x=$this->GetX();
+					$y=$this->GetY();
+					$l = $w[$i];
+					$this->Rect($x,$y,$l,$h);
+					$this->MultiCell($l,5,trim($row[$i]),0,'C');
+					//Put the position to the right of the cell
+					$this->SetXY($x+$l,$y);	
 				}
-				$this->Ln($h);
+				elseif($i == 1){
+					$x=$this->GetX();
+					$y=$this->GetY();
+					$l = 40;
+					$this->Rect($x,$y,$l,$h);
+					$this->MultiCell($l,5,trim($row[$i]),0,'C');
+					//Put the position to the right of the cell
+					$this->SetXY($x+$l,$y);	
+				}				
 			}
-			else{
-				$this->SetFont('','');
-				$this->SetX(15);
-				$nb=0;
-				for($i=0;$i<count($row);$i++)
-					$nb=max($nb,$this->NbLines($w[$i],trim($row[$i])));
-				$h=5*$nb;
-				$this->CheckPageBreak($h);
-				for($i=0;$i<count($row);$i++)
-				{	
-					if($i == 0){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]+25;
-						$this->Rect($x,$y,$l,$h);
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					elseif($i == 1){
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$l = $w[$i]-25;
-						$this->Rect($x,$y,$l,$h);
-						$this->MultiCell($l,5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$l,$y);	
-					}
-					else{
-						$x=$this->GetX();
-						$y=$this->GetY();
-						$this->Rect($x,$y,$w[$i],$h);
-						$this->MultiCell($w[$i],5,trim($row[$i]),0,'C');
-						//Put the position to the right of the cell
-						$this->SetXY($x+$w[$i],$y);	
-					}					
-				}
-				$this->Ln($h);
-			}
+			$this->Ln($h);
 		}
+		
 		$ok++;	
-	}
-	$lettre = $this->Conversion($this->totalHT);
-    $lettre = ucfirst($lettre).'francs';
-    $text = "Arrêter la présente facture à la somme de : $lettre";
-	$this->SetX(15);
-	$this->MultiCell(180,7,utf8_decode($text),0,'L');
 	}
 }
 

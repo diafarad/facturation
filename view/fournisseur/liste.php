@@ -46,6 +46,7 @@ include_once '../../model/FournisseurDB.php';
 
 <div class="container" style="margin-top: 90px">
     <div class="panel panel-info ">
+    <div id="info"></div>
         <div class="panel-heading" align="center">Mes Founisseurs</div>
         <div class="panel-body">
             <button type="button" style="margin-bottom: 5px;" class="btn btn-primary" data-toggle="modal"
@@ -56,11 +57,7 @@ include_once '../../model/FournisseurDB.php';
                 <tr>
                     <th style='text-align:center;'>Nom</th>
                     <th style='text-align:center;'>Adresse</th>
-                    <th style='text-align:center;'>CP</th>
-                    <th style='text-align:center;'>Ville </th>
-                    <th style='text-align:center;'>Pays </th>
                     <th style='text-align:center;'>Téléphone </th>
-                    <th style='text-align:center;'>Mail </th>
                     <th style='text-align:center;'>Action </th>
                     <th style='text-align:center;'>Action </th>
                 </tr>
@@ -74,13 +71,25 @@ include_once '../../model/FournisseurDB.php';
                     <tr>
                         <td style='text-align:center;'>$result[1]</td>
                         <td style='text-align:center;'>$result[2]</td>
-                        <td style='text-align:center;'>$result[7]</td>
                         <td style='text-align:center;'>$result[3]</td>
-                        <td style='text-align:center;'>$result[4]</td>
-                        <td style='text-align:center;'>$result[5]</td>
-                        <td style='text-align:center;'>$result[6]</td>
-                        <td><center><a class='btn btn-info btn-xs' href='#'>Éditer</a></center></td>
-                        <td><center><a class='btn btn-danger btn-xs' href='#'>Supprimer</a></center></td>
+                        <td>
+                        <center><button type='button' class='btn btn-info btn-xs edit_button' 
+                        data-toggle='modal' data-target='#myeditModal'
+                        data-nom='$result[1]'
+                        data-adr='$result[2]'
+                        data-tel='$result[3]'
+                        data-id='$result[0]'>
+                        Éditer
+                    </button>
+                    </center></td>
+                        <td>
+                        <center><button type='button' class='btn btn-warning btn-xs del_button' 
+                        data-toggle='modal' data-target='#mydelModal'
+                        data-id='$result[0]'>
+                        Supprimer
+                        </button>
+                        </center>
+                        </td>
                     </tr>
                     ";
                 }
@@ -101,11 +110,7 @@ include_once '../../model/FournisseurDB.php';
                 <tr>
                     <th style='text-align:center;'>Nom</th>
                     <th style='text-align:center;'>Adresse</th>
-                    <th style='text-align:center;'>CP</th>
-                    <th style='text-align:center;'>Ville </th>
-                    <th style='text-align:center;'>Pays </th>
                     <th style='text-align:center;'>Téléphone </th>
-                    <th style='text-align:center;'>Mail </th>
                     <th style='text-align:center;'>Action </th>
                     <th style='text-align:center;'>Action </th>
                 </tr>
@@ -128,32 +133,16 @@ include_once '../../model/FournisseurDB.php';
             <div class="modal-body">
                 <form method="post" action="../../controller/FournisseurController.php">
                     <div class="form-group">
-                        <label class="control-label">Prénom(s) & Nom</label>
-                        <input class="form-control" type="text" name="nom" id="nom" placeholder="Prénom(s) et nom du fournisseur"/>
+                        <label class="control-label">Nom</label>
+                        <input class="form-control" type="text" name="nom" id="nom" placeholder="Nom du fournisseur"/>
                     </div>
                     <div class="form-group">
                         <label class="control-label">Adresse</label>
                         <input class="form-control" type="text" name="adresse" id="adresse" placeholder="Entrer l'adresse du fournisseur'"/>
                     </div>
                     <div class="form-group">
-                        <label class="control-label">Ville</label>
-                        <input class="form-control" type="text" name="ville" id="ville" placeholder="Entrer la ville"/>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Pays</label>
-                        <input class="form-control" type="text" name="pays" id="pays" placeholder="Entrer le pays"/>
-                    </div>
-                    <div class="form-group">
                         <label class="control-label">Téléphone</label>
                         <input class="form-control" type="text" name="tel" id="tel" placeholder="Entrer le numéro de téléphone"/>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Mail</label>
-                        <input class="form-control" type="text" name="mail" id="mail" placeholder="Entrer le mail"/>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Boîte postale</label>
-                        <input class="form-control" type="text" name="bp" id="bp" placeholder="Entrer la boîte postale"/>
                     </div>
                     <div class="form-group">
                         <input class="btn btn-success" type="submit" name="valider" value="Ajouter"/>
@@ -164,5 +153,110 @@ include_once '../../model/FournisseurDB.php';
     </div>
 </div>
 
+<div class="modal fade" id="myeditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="edok" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Édition fournisseur</h4>
+            </div>
+            <form method="post" id="editFour">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input readonly class="form-control four_id" type="hidden" name="edit_id" required>
+                        <label for="heading">Nom</label>
+                        <input class="form-control four_nom" type="text" name="edit_nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Adresse</label>
+                        <input class="form-control four_adr" type="text" name="edit_adr" placeholder="Entrer le nom du client" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Téléphone</label>
+                        <input class="form-control four_tel" type="text" name="edit_tel" placeholder="Entrer le téléphone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="enregistrer">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mydelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Suppression fournisseur</h4>
+            </div>
+            <form method="post" action="../../controller/FournisseurController.php">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <h3>Voulez-vous vraiment supprimer?</h3>
+                        <input class="form-control del_id" type="hidden" name="id" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning" name="supprimer">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
+
+<script>
+document.getElementById('info').style.display = 'none';
+ $(document).ready(function(){
+    $(document).on( "click", '.edit_button',function(e) {
+        var id = $(this).data('id');
+        var nom = $(this).data('nom');
+        var adr = $(this).data('adr');
+        var tel = $(this).data('tel');
+
+        $(".four_id").val(id);
+        $(".four_nom").val(nom);
+        $(".four_adr").val(adr);
+        $(".four_tel").val(tel);
+        //tinyMCE.get('business_skill_content').setContent(content);
+    });
+
+    $('#editFour').on('submit', function () {
+        event.preventDefault();
+        //var count_data = 0;
+        //alert($('#lib').val());
+        var form_data = $(this).serialize();
+        $.ajax({
+            url: "../../controller/FournisseurController.php",
+            method: "POST",
+            data: form_data,
+            success: function(data) {
+                $('#editFour')[0].reset();
+                $('#edok').click();
+                //$('body').removeClass('modal-open');
+                //$('.modal-backdrop').remove();
+                document.getElementById('info').style.display = 'block';
+                $('#info').html(data);
+                window.setTimeout(function() {
+                    $(".alert").fadeTo(700, 0).slideUp(700, function(){
+                        $(this).remove();
+                    });
+                }, 2000);
+            },
+            error: function(data){
+                console.log('ERREUR : ' + data);
+            }
+        });
+    });
+
+    $(document).on( "click", '.del_button',function(e) {
+        var id = $(this).data('id');
+
+        $(".del_id").val(id);
+        });     
+ });
+</script>
